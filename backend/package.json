@@ -1,0 +1,17 @@
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "Project with separate backend and frontend",
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "socket.io": "^4.0.0",
+    "socket.io-client": "^4.0.0"
+  },
+  "engines": {
+    "node": "14.x"
+  }
+}
