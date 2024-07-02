@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acessar Câmera</title>
+</head>
+
+<body>
+    <h1>Acessar Câmera do Celular</h1>
+    <video id="video" width="600" height="400" autoplay></video>
+    <script src="script.js"></script>
+</body>
+<script>
+    async function startCamera() {
+        try {
+            // Verifica se o navegador suporta a API MediaDevices
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("API MediaDevices não é suportada no seu navegador.");
+            }
+
+            // Solicita permissão para acessar a câmera
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "user" // Pode usar "environment" para a câmera traseira
+                }
+            });
+
+            // Seleciona o elemento de vídeo e define o stream como a fonte de vídeo
+            const video = document.getElementById("video");
+            video.srcObject = stream;
+
+            // Inicia a reprodução do vídeo
+            video.play();
+        } catch (error) {
+            console.error("Erro ao acessar a câmera: ", error);
+            alert("Erro ao acessar a câmera: " + error.message);
+        }
+    }
+
+    // Chama a função para iniciar a câmera quando a página carrega
+    window.addEventListener("load", startCamera);
+
+</script>
+
+</html>
