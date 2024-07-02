@@ -1,0 +1,11 @@
+{
+    "name": "my-project",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "cd backend && yarn start"
+    },
+    "engines": {
+        "node": "20.x"
+    },
+    "dependencies": {}
+}
