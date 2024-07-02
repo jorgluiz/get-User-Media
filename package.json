@@ -1,0 +1,11 @@
+{
+  "name": "meu-projeto-html",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p $PORT"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
