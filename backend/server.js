@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -7,14 +9,13 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve arquivos estáticos do frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 io.on('connection', socket => {
-    console.log('Um usuário conectou');
+    console.log('A user connected');
 
     socket.on('ready', () => {
-        console.log('Usuário está pronto');
+        console.log('User is ready');
     });
 
     socket.on('offer', data => {
@@ -30,11 +31,11 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-        console.log('Usuário desconectado');
+        console.log('User disconnected');
     });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor ouvindo na porta ${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
 });
