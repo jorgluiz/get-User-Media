@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+const stunServerUrl = process.env.STUN_SERVER_URL;
+
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Rota para servir o index.html para todas as requisições
@@ -41,8 +43,13 @@ io.on('connection', socket => {
     });
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`The server is now running on port ${PORT}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, async () => {
+    console.log(`Server listening on port ${PORT}`);
+
+    // Importação dinâmica do módulo 'open'
+    const open = (await import('open')).default;
+
+    // Abrir a página inicial automaticamente
     open(`http://localhost:${PORT}`);
-})
+});
