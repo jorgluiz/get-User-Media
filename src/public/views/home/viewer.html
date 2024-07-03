@@ -58,8 +58,6 @@
                     video.id = `video-${id}`;
                     video.width = 200;
                     video.height = 200;
-                    video.autoplay = true;
-                    video.controls = true; // Ativando o controlador de play do vídeo
                     video.srcObject = event.streams[0];
                     videosDiv.appendChild(video);
                 } else {
