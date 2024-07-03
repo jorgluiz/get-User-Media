@@ -1,9 +1,10 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const path = require('path');
-const open = require('open');
-require('dotenv').config();
+import express from 'express'
+import http from 'http'
+import socketIo from 'socket.io'
+import path from 'path'
+import open from 'open'
+
+await import('dotenv').then((module) => module.config()); // Importa e configura dotenv
 
 const app = express();
 const server = http.createServer(app);
