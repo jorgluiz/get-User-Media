@@ -48,10 +48,12 @@
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
                 iceTransportPolicy: 'all', // Adicionando políticas de transporte ICE
                 bundlePolicy: 'max-bundle', // Para otimizar o uso do tráfego de rede
-                rtcpMuxPolicy: 'require'   // Para garantir que o multiplexação RTP/RTCP esteja habilitada
+                rtcpMuxPolicy: 'require',   // Para garantir que o multiplexação RTP/RTCP esteja habilitada
+                iceCandidatePoolSize: 0
             });
 
             peerConnection.onicecandidate = event => {
+                console.log(event.candidate, "event.candidate")
                 if (event.candidate) {
                     console.log("Enviando candidato para:", id);
                     socket.emit('candidate', event.candidate, id);
