@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.status(200).render("./home");
+    res.status(200).render("./home/index.html");
 });
 
 io.on('connection', socket => {
