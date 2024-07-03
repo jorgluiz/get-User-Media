@@ -2,9 +2,9 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const open = require('open');
-const app = express();
 const socketIo = require('socket.io');
 
+const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
         viewers.delete(socket.id);  // Remove o usuário da lista de espectadores
         io.emit('updateViewers', Array.from(viewers));  // Atualiza a lista de espectadores para todos os clientes
         delete peerConnections[socket.id];
-        socket.broadcast.emit('user-disconnected', socket.id); // Altera para um evento não reservado
+        socket.broadcast.emit('user-disconnected', socket.id);
     });
 });
 
