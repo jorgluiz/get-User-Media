@@ -59,9 +59,9 @@
                     video.width = 600;
                     video.height = 400;
                     video.autoplay = true;
-                    video.srcObject = event.streams[0];
                     videosDiv.appendChild(video);
-                } else {
+                }
+                if (video.srcObject !== event.streams[0]) {
                     video.srcObject = event.streams[0];
                 }
             };
