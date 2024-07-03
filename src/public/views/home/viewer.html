@@ -56,8 +56,8 @@
                 if (!video) {
                     video = document.createElement('video');
                     video.id = `video-${id}`;
-                    video.width = 700;
-                    video.height = 700;
+                    video.width = 600;
+                    video.height = 400;
                     video.autoplay = true;
                     video.srcObject = event.streams[0];
                     videosDiv.appendChild(video);
@@ -98,6 +98,14 @@
                     video.remove();
                 }
             }
+        });
+
+        // Adiciona o controle do volume do vídeo
+        document.addEventListener('click', () => {
+            const videoElements = document.querySelectorAll('video');
+            videoElements.forEach(video => {
+                video.controls = true; // Adiciona o controlador do vídeo
+            });
         });
     </script>
 </body>

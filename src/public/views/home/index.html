@@ -54,7 +54,19 @@
 
         async function startCamera() {
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoInput = devices.find(device => device.kind === 'videoinput' && device.label.includes('OBS Virtual Camera'));
+
+                // Log the available devices
+                console.log('Available video devices:', devices);
+
+                if (videoInput) {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: videoInput.deviceId }
+                    });
+                } else {
+                    localStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                }
 
                 localVideo.srcObject = localStream;
 
