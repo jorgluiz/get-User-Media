@@ -38,20 +38,25 @@
         const videosDiv = document.getElementById('videos');
         const peers = {};
 
+        console.log("Conectando ao servidor...");
+
         socket.emit('readyToView');
 
         socket.on('offer', async (offer, id) => {
+            console.log("Recebida oferta de:", id);
             const peerConnection = new RTCPeerConnection({
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
             });
 
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
+                    console.log("Enviando candidato para:", id);
                     socket.emit('candidate', event.candidate, id);
                 }
             };
 
             peerConnection.ontrack = event => {
+                console.log("Recebendo stream de:", id);
                 let video = document.getElementById(`video-${id}`);
                 if (!video) {
                     video = document.createElement('video');
@@ -69,12 +74,14 @@
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
+            console.log("Enviando resposta para:", id);
             socket.emit('answer', answer, id);
 
             peers[id] = peerConnection;
         });
 
         socket.on('answer', async (answer, id) => {
+            console.log("Recebida resposta de:", id);
             const peerConnection = peers[id];
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
@@ -82,6 +89,7 @@
         });
 
         socket.on('candidate', async (candidate, id) => {
+            console.log("Recebido candidato de:", id);
             const peerConnection = peers[id];
             if (peerConnection) {
                 await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
@@ -89,6 +97,7 @@
         });
 
         socket.on('user-disconnected', id => {
+            console.log("Usuário desconectado:", id);
             const peerConnection = peers[id];
             if (peerConnection) {
                 peerConnection.close();
