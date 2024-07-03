@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acessar Câmera</title>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <title>Conectar Câmera</title>
+    <script src="https://cdn.socket.io/4.7.6/socket.io.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,13 +28,12 @@
 </head>
 
 <body>
-    <h1>Acessar Câmera do Celular</h1>
+    <h1>Conectar Câmera</h1>
     <video id="localVideo" width="600" height="400" autoplay muted></video>
-    <video id="remoteVideo" width="600" height="400" autoplay></video>
+    <button id="startCamera">Iniciar Câmera</button>
     <script>
         const socket = io(); // Conecta ao servidor de sinalização
         const localVideo = document.getElementById('localVideo');
-        const remoteVideo = document.getElementById('remoteVideo');
         let localStream;
         let peerConnection;
         const configuration = {
@@ -45,12 +44,7 @@
 
         async function startCamera() {
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: "user"
-                    },
-                    audio: false
-                });
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
                 localVideo.srcObject = localStream;
 
@@ -63,14 +57,7 @@
                 };
 
                 peerConnection.ontrack = event => {
-                    remoteVideo.srcObject = event.streams[0];
-                };
-
-                peerConnection.onconnectionstatechange = () => {
-                    if (peerConnection.connectionState === 'failed') {
-                        console.error('Conexão WebRTC falhou.');
-                        alert('Conexão WebRTC falhou.');
-                    }
+                    // No need to handle this here for this page
                 };
 
                 const offer = await peerConnection.createOffer();
@@ -84,15 +71,14 @@
             }
         }
 
+        document.getElementById('startCamera').addEventListener('click', startCamera);
+
         socket.on('offer', async (offer) => {
             peerConnection = new RTCPeerConnection(configuration);
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
                     socket.emit('candidate', event.candidate);
                 }
-            };
-            peerConnection.ontrack = event => {
-                remoteVideo.srcObject = event.streams[0];
             };
 
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -108,8 +94,6 @@
         socket.on('candidate', async (candidate) => {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         });
-
-        window.addEventListener('load', startCamera);
     </script>
 </body>
 

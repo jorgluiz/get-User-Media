@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Usuários</title>
+    <script src="https://cdn.socket.io/4.7.6/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        video {
+            border: 1px solid #ddd;
+            background-color: #000;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ver Usuários com Câmera Ligada</h1>
+    <div id="videosContainer"></div>
+    <script>
+        const socket = io(); // Conecta ao servidor de sinalização
+
+        const videosContainer = document.getElementById('videosContainer');
+        let peerConnections = {};
+
+        socket.on('offer', async (offer, id) => {
+            const peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            });
+
+            peerConnections[id] = peerConnection;
+
+            peerConnection.ontrack = event => {
+                let remoteVideo = document.getElementById(id);
+
+                if (!remoteVideo) {
+                    remoteVideo = document.createElement('video');
+                    remoteVideo.id = id;
+                    remoteVideo.width = 600;
+                    remoteVideo.height = 400;
+                    remoteVideo.autoplay = true;
+                    remoteVideo.muted = true; // Mute the local video
+                    videosContainer.appendChild(remoteVideo);
+                }
+
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate, id);
+                }
+            };
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('answer', answer, id);
+        });
+
+        socket.on('answer', async (answer, id) => {
+            await peerConnections[id].setRemoteDescription(new RTCSessionDescription(answer));
+        });
+
+        socket.on('candidate', async (candidate, id) => {
+            await peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
+        });
+
+        socket.on('disconnect', (id) => {
+            const video = document.getElementById(id);
+            if (video) {
+                video.remove();
+            }
+            if (peerConnections[id]) {
+                peerConnections[id].close();
+                delete peerConnections[id];
+            }
+        });
+
+        // Emitir um evento para iniciar a conexão WebRTC com os outros usuários
+        socket.emit('readyToView');
+    </script>
+</body>
+
+</html>

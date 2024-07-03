@@ -2,54 +2,61 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const open = require('open');
-const app = express()
+const app = express();
 const socketIo = require('socket.io');
 
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Rota para servir o index.html para todas as requisições
-// O código define o motor de visualização como HTML
 app.set("view engine", "html");
 app.engine("html", require("hbs").__express);
 app.set("views", path.join(__dirname, "public/views"));
 
-// Arquivos estáticos, incluindo CSS e JavaScript, a partir da pasta "public".
-// Isso permite usar css e js em seus arquivos HTML.
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.status(200).render("./home/index.html");
+    res.status(200).render('home/index.html');
 });
 
-io.on('connection', socket => {
-    console.log('A user connected');
+app.get('/viewer', (req, res) => {
+    res.status(200).render('home/viewer.html');
+});
+
+const peerConnections = {};
+
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
 
     socket.on('ready', () => {
-        console.log('User is ready');
+        console.log('User is ready:', socket.id);
     });
 
-    socket.on('offer', data => {
-        socket.broadcast.emit('offer', data);
+    socket.on('readyToView', () => {
+        console.log('Viewer connected:', socket.id);
     });
 
-    socket.on('answer', data => {
-        socket.broadcast.emit('answer', data);
+    socket.on('offer', (offer) => {
+        socket.broadcast.emit('offer', offer, socket.id);
     });
 
-    socket.on('candidate', data => {
-        socket.broadcast.emit('candidate', data);
+    socket.on('answer', (answer, id) => {
+        io.to(id).emit('answer', answer, socket.id);
+    });
+
+    socket.on('candidate', (candidate, id) => {
+        io.to(id).emit('candidate', candidate, socket.id);
     });
 
     socket.on('disconnect', () => {
-        console.log('User disconnected');
+        console.log('User disconnected:', socket.id);
+        socket.broadcast.emit('disconnect', socket.id);
     });
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`The server is now running on port ${PORT}`);
     open(`http://localhost:${PORT}`);
-})
+});
