@@ -44,14 +44,17 @@ io.on('connection', (socket) => {
     });
 
     socket.on('offer', (offer, id) => {
+        console.log(`Received offer from ${socket.id} to ${id}`);
         socket.broadcast.emit('offer', offer, socket.id);
     });
 
     socket.on('answer', (answer, id) => {
+        console.log(`Received answer from ${socket.id} to ${id}`);
         io.to(id).emit('answer', answer, socket.id);
     });
 
     socket.on('candidate', (candidate, id) => {
+        console.log(`Received candidate from ${socket.id} to ${id}`);
         io.to(id).emit('candidate', candidate, socket.id);
     });
 
