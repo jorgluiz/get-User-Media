@@ -23,10 +23,9 @@
         video {
             border: 1px solid #ddd;
             background-color: #000;
-            margin-bottom: 10px;
         }
 
-        button {
+        .buttons {
             margin-top: 10px;
         }
     </style>
@@ -36,6 +35,9 @@
     <h1>Conectar Câmera</h1>
     <video id="localVideo" width="600" height="400" autoplay muted></video>
     <button id="startCamera">Iniciar Câmera</button>
+    <div class="buttons">
+        <button id="goToViewer">Ir para o Visualizador</button>
+    </div>
     <script>
         const socket = io(); // Conecta ao servidor de sinalização
         const localVideo = document.getElementById('localVideo');
@@ -57,7 +59,7 @@
                 localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
                 peerConnection.onicecandidate = event => {
                     if (event.candidate) {
-                        socket.emit('candidate', event.candidate, peerConnection.id);
+                        socket.emit('candidate', event.candidate);
                     }
                 };
 
@@ -76,26 +78,24 @@
             }
         }
 
-        document.getElementById('startCamera').addEventListener('click', async () => {
-            try {
-                await startCamera();
-            } catch (error) {
-                console.error("Erro ao iniciar câmera: ", error);
-            }
+        document.getElementById('startCamera').addEventListener('click', startCamera);
+
+        document.getElementById('goToViewer').addEventListener('click', () => {
+            window.location.href = '/viewer';
         });
 
-        socket.on('offer', async (offer, id) => {
+        socket.on('offer', async (offer) => {
             peerConnection = new RTCPeerConnection(configuration);
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
-                    socket.emit('candidate', event.candidate, id);
+                    socket.emit('candidate', event.candidate);
                 }
             };
 
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            socket.emit('answer', answer, id);
+            socket.emit('answer', answer);
         });
 
         socket.on('answer', async (answer) => {
@@ -108,10 +108,6 @@
 
         socket.on('updateViewers', (viewers) => {
             console.log('Current viewers:', viewers);
-        });
-
-        socket.on('disconnect', (id) => {
-            console.log(`User ${id} disconnected`);
         });
     </script>
 </body>

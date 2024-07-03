@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar Câmeras</title>
-    <script src="https://cdn.socket.io/4.7.6/socket.io.min.js"></script>
+    <title>Visualizador</title>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,22 +23,24 @@
         video {
             border: 1px solid #ddd;
             background-color: #000;
-            margin-bottom: 10px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Visualizar Câmeras</h1>
+    <h1>Visualizador de Câmeras</h1>
     <div id="videos"></div>
     <script>
-        const socket = io(); // Conecta ao servidor de sinalização
+        const socket = io();
         const videosDiv = document.getElementById('videos');
-        const peerConnections = {};
+        const peers = {};
+
+        socket.emit('readyToView');
 
         socket.on('offer', async (offer, id) => {
-            const peerConnection = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-            peerConnections[id] = peerConnection;
+            const peerConnection = new RTCPeerConnection({
+                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            });
 
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
@@ -47,40 +49,52 @@
             };
 
             peerConnection.ontrack = event => {
-                let remoteVideo = document.getElementById(`remoteVideo_${id}`);
-                if (!remoteVideo) {
-                    remoteVideo = document.createElement('video');
-                    remoteVideo.id = `remoteVideo_${id}`;
-                    remoteVideo.width = 600;
-                    remoteVideo.height = 400;
-                    remoteVideo.autoplay = true;
-                    remoteVideo.muted = false;
-                    videosDiv.appendChild(remoteVideo);
+                let video = document.getElementById(`video-${id}`);
+                if (!video) {
+                    video = document.createElement('video');
+                    video.id = `video-${id}`;
+                    video.width = 600;
+                    video.height = 400;
+                    video.autoplay = true;
+                    video.srcObject = event.streams[0];
+                    videosDiv.appendChild(video);
+                } else {
+                    video.srcObject = event.streams[0];
                 }
-                remoteVideo.srcObject = event.streams[0];
             };
 
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
             socket.emit('answer', answer, id);
+
+            peers[id] = peerConnection;
+        });
+
+        socket.on('answer', async (answer, id) => {
+            const peerConnection = peers[id];
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            }
         });
 
         socket.on('candidate', async (candidate, id) => {
-            await peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-        });
-
-        socket.on('updateViewers', (viewers) => {
-            console.log('Current viewers:', viewers);
-        });
-
-        socket.on('disconnect', (id) => {
-            console.log(`User ${id} disconnected`);
-            const videoElement = document.getElementById(`remoteVideo_${id}`);
-            if (videoElement) {
-                videoElement.remove();
+            const peerConnection = peers[id];
+            if (peerConnection) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
             }
-            delete peerConnections[id];
+        });
+
+        socket.on('user-disconnected', id => {
+            const peerConnection = peers[id];
+            if (peerConnection) {
+                peerConnection.close();
+                delete peers[id];
+                const video = document.getElementById(`video-${id}`);
+                if (video) {
+                    video.remove();
+                }
+            }
         });
     </script>
 </body>
