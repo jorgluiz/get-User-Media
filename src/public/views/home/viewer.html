@@ -31,7 +31,10 @@
     <h1>Visualizador de Câmeras</h1>
     <div id="videos"></div>
     <script>
-        const socket = io();
+        const socket = io({
+            transports: ['websocket'],
+            upgrade: false
+        });
         const videosDiv = document.getElementById('videos');
         const peers = {};
 

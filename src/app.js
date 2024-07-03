@@ -6,7 +6,10 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    transports: ['websocket'],
+    allowEIO3: true
+});
 
 app.set("view engine", "html");
 app.engine("html", require("hbs").__express);
@@ -24,25 +27,23 @@ app.get('/viewer', (req, res) => {
     res.status(200).render('home/viewer.html');
 });
 
-const peerConnections = {};
-const viewers = new Set();  // Adiciona um Set para gerenciar os espectadores
+const viewers = new Set();
 
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     socket.on('ready', () => {
         console.log('User is ready:', socket.id);
-        viewers.add(socket.id);  // Adiciona o usuário à lista de espectadores
-        io.emit('updateViewers', Array.from(viewers));  // Atualiza a lista de espectadores para todos os clientes
+        viewers.add(socket.id);
+        io.emit('updateViewers', Array.from(viewers));
     });
 
     socket.on('readyToView', () => {
         console.log('Viewer connected:', socket.id);
-        io.emit('updateViewers', Array.from(viewers));  // Atualiza a lista de espectadores para todos os clientes
+        io.emit('updateViewers', Array.from(viewers));
     });
 
     socket.on('offer', (offer, id) => {
-        peerConnections[socket.id] = { peerConnection: new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }), id };
         socket.broadcast.emit('offer', offer, socket.id);
     });
 
@@ -56,9 +57,8 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        viewers.delete(socket.id);  // Remove o usuário da lista de espectadores
-        io.emit('updateViewers', Array.from(viewers));  // Atualiza a lista de espectadores para todos os clientes
-        delete peerConnections[socket.id];
+        viewers.delete(socket.id);
+        io.emit('updateViewers', Array.from(viewers));
         socket.broadcast.emit('user-disconnected', socket.id);
     });
 });
