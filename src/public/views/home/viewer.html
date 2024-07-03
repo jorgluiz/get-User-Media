@@ -46,7 +46,10 @@
             console.log("Recebida oferta de:", id);
             const peerConnection = new RTCPeerConnection({
                 iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-                iceTransportPolicy: 'all', // Adicionando políticas de transporte ICE
+                iceTransportPolicy: 'all',
+                bundlePolicy: 'balanced',
+                rtcpMuxPolicy: 'require',
+                iceCandidatePoolSize: 0,
             });
 
             peerConnection.onicecandidate = event => {
