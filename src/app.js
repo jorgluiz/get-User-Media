@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('user-disconnected', socket.id);
     });
 });
-
+// port number 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
     console.log(`The server is now running on port ${PORT}`);
