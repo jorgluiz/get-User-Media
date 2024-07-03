@@ -24,6 +24,10 @@
             border: 1px solid #ddd;
             background-color: #000;
         }
+
+        button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -52,7 +56,7 @@
                 localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
                 peerConnection.onicecandidate = event => {
                     if (event.candidate) {
-                        socket.emit('candidate', event.candidate);
+                        socket.emit('candidate', event.candidate, peerConnection.id);
                     }
                 };
 
@@ -73,18 +77,18 @@
 
         document.getElementById('startCamera').addEventListener('click', startCamera);
 
-        socket.on('offer', async (offer) => {
+        socket.on('offer', async (offer, id) => {
             peerConnection = new RTCPeerConnection(configuration);
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
-                    socket.emit('candidate', event.candidate);
+                    socket.emit('candidate', event.candidate, id);
                 }
             };
 
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            socket.emit('answer', answer);
+            socket.emit('answer', answer, id);
         });
 
         socket.on('answer', async (answer) => {
@@ -93,6 +97,14 @@
 
         socket.on('candidate', async (candidate) => {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        });
+
+        socket.on('updateViewers', (viewers) => {
+            console.log('Current viewers:', viewers);
+        });
+
+        socket.on('disconnect', (id) => {
+            console.log(`User ${id} disconnected`);
         });
     </script>
 </body>
