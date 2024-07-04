@@ -70,7 +70,10 @@
 
                 peerConnection = new RTCPeerConnection(configuration);
                 console.log(peerConnection)
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                localStream.getTracks().forEach(track => {
+                    console.log(track, 'getTracks')
+                    peerConnection.addTrack(track, localStream)
+                });
                 peerConnection.onicecandidate = event => {
                     if (event.candidate) {
                         socket.emit('candidate', event.candidate);
@@ -78,6 +81,7 @@
                 };
 
                 peerConnection.ontrack = event => {
+                    console.log('ontrack', event)
                     // No need to handle this here for this page
                 };
 
