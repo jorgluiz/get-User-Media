@@ -27,69 +27,69 @@ app.get('/viewer', (req, res) => {
     res.status(200).render('home/viewer.html');
 });
 
-// const viewers = new Set();
-
-// io.on('connection', (socket) => {
-//     console.log('A user connected:', socket.id);
-
-//     socket.on('ready', () => {
-//         console.log('User is ready:', socket.id);
-//         viewers.add(socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//     });
-
-//     socket.on('readyToView', () => {
-//         console.log('Viewer connected:', socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//     });
-
-//     socket.on('offer', (offer, id) => {
-//         socket.broadcast.emit('offer', offer, socket.id);
-//     });
-
-//     socket.on('answer', (answer, id) => {
-//         io.to(id).emit('answer', answer, socket.id);
-//     });
-
-//     socket.on('candidate', (candidate, id) => {
-//         io.to(id).emit('candidate', candidate, socket.id);
-//     });
-
-//     socket.on('disconnect', () => {
-//         console.log('User disconnected:', socket.id);
-//         viewers.delete(socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//         socket.broadcast.emit('user-disconnected', socket.id);
-//     });
-// });
+const viewers = new Set();
 
 io.on('connection', (socket) => {
-    console.log('Novo usuário conectado:', socket.id);
+    console.log('A user connected:', socket.id);
+
+    socket.on('ready', () => {
+        console.log('User is ready:', socket.id);
+        viewers.add(socket.id);
+        io.emit('updateViewers', Array.from(viewers));
+    });
 
     socket.on('readyToView', () => {
-        socket.broadcast.emit('readyToView');
+        console.log('Viewer connected:', socket.id);
+        io.emit('updateViewers', Array.from(viewers));
     });
 
     socket.on('offer', (offer, id) => {
-        console.log(`Enviando oferta para ${id}`);
         socket.broadcast.emit('offer', offer, socket.id);
     });
 
     socket.on('answer', (answer, id) => {
-        console.log(`Enviando resposta para ${id}`);
-        socket.to(id).emit('answer', answer);
+        io.to(id).emit('answer', answer, socket.id);
     });
 
     socket.on('candidate', (candidate, id) => {
-        console.log(`Enviando candidato para ${id}`);
-        socket.to(id).emit('candidate', candidate);
+        io.to(id).emit('candidate', candidate, socket.id);
     });
 
     socket.on('disconnect', () => {
-        console.log('Usuário desconectado:', socket.id);
+        console.log('User disconnected:', socket.id);
+        viewers.delete(socket.id);
+        io.emit('updateViewers', Array.from(viewers));
         socket.broadcast.emit('user-disconnected', socket.id);
     });
 });
+
+// io.on('connection', (socket) => {
+//     console.log('Novo usuário conectado:', socket.id);
+
+//     socket.on('readyToView', () => {
+//         socket.broadcast.emit('readyToView');
+//     });
+
+//     socket.on('offer', (offer, id) => {
+//         console.log(`Enviando oferta para ${id}`);
+//         socket.broadcast.emit('offer', offer, socket.id);
+//     });
+
+//     socket.on('answer', (answer, id) => {
+//         console.log(`Enviando resposta para ${id}`);
+//         socket.to(id).emit('answer', answer);
+//     });
+
+//     socket.on('candidate', (candidate, id) => {
+//         console.log(`Enviando candidato para ${id}`);
+//         socket.to(id).emit('candidate', candidate);
+//     });
+
+//     socket.on('disconnect', () => {
+//         console.log('Usuário desconectado:', socket.id);
+//         socket.broadcast.emit('user-disconnected', socket.id);
+//     });
+// });
 
 
 const PORT = process.env.PORT || 8080;
