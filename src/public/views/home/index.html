@@ -47,21 +47,7 @@
         let localStream;
         let peerConnection;
         const configuration = {
-            iceServers: [
-                { urls: 'stun:sp-turn2.xirsys.com' },  // Servidor STUN público
-                {
-                    urls: [
-                        "turn:sp-turn2.xirsys.com:80?transport=udp",
-                        "turn:sp-turn2.xirsys.com:3478?transport=udp",
-                        "turn:sp-turn2.xirsys.com:80?transport=tcp",
-                        "turn:sp-turn2.xirsys.com:3478?transport=tcp",
-                        "turns:sp-turn2.xirsys.com:443?transport=tcp",
-                        "turns:sp-turn2.xirsys.com:5349?transport=tcp"
-                    ],
-                    username: 'WGkfe4xlQa6Jyn3wrAWtvNQmo6NFT4kCYeyjco9l0EAvAPOoQnBYUJF6u7c7HpDTAAAAAGaGIuRqb3JnZWx1aXp0aQ==',  // Substitua pelo nome de usuário do servidor TURN
-                    credential: 'a6e38acc-39bc-11ef-a38d-0242ac120004',  // Substitua pela senha do servidor TURN
-                }
-            ]
+            iceServers: [{ urls: ["stun:sp-turn2.xirsys.com"] }, { username: "WGkfe4xlQa6Jyn3wrAWtvNQmo6NFT4kCYeyjco9l0EAvAPOoQnBYUJF6u7c7HpDTAAAAAGaGIuRqb3JnZWx1aXp0aQ==", credential: "a6e38acc-39bc-11ef-a38d-0242ac120004", urls: ["turn:sp-turn2.xirsys.com:80?transport=udp", "turn:sp-turn2.xirsys.com:3478?transport=udp", "turn:sp-turn2.xirsys.com:80?transport=tcp", "turn:sp-turn2.xirsys.com:3478?transport=tcp", "turns:sp-turn2.xirsys.com:443?transport=tcp", "turns:sp-turn2.xirsys.com:5349?transport=tcp"] }]
         };
 
         async function startCamera() {
