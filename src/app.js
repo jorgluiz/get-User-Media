@@ -13,7 +13,6 @@ const io = socketIo(server, {
     allowEIO3: true
 });
 
-
 // app.engine("html", require("hbs").__express);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "public/views"));
