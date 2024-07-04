@@ -14,8 +14,8 @@ const io = socketIo(server, {
 });
 
 
-app.set("view engine", "html");
-app.engine("html", require("hbs").__express);
+// app.engine("html", require("hbs").__express);
+app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "public/views"));
 
 app.use(express.urlencoded({ extended: false }));
