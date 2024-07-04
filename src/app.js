@@ -5,6 +5,7 @@ const open = require('open');
 const socketIo = require('socket.io');
 
 const app = express();
+
 const server = http.createServer(app);
 const io = socketIo(server, {
     transports: ['websocket'],
@@ -90,6 +91,8 @@ io.on('connection', (socket) => {
 //         socket.broadcast.emit('user-disconnected', socket.id);
 //     });
 // });
+
+// Node Get ICE STUN and TURN list
 
 
 const PORT = process.env.PORT || 8080;
