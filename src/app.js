@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -22,11 +23,31 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.status(200).render('home/index.html');
+    res.status(200).render('home/index.html', {
+        STUN_SERVER: process.env.STUN_SERVER,
+        TURN_USERNAME: process.env.TURN_USERNAME,
+        TURN_CREDENTIAL: process.env.TURN_CREDENTIAL,
+        TURNSPTURN80: process.env.TURNSPTURN80,
+        TURNSPTURN3478: process.env.TURNSPTURN3478,
+        TURNSPTURN80TCP: process.env.TURNSPTURN80TCP,
+        TURNSPTURN3478TCP: process.env.TURNSPTURN3478TCP,
+        TURNSPTURN443: process.env.TURNSPTURN443,
+        TURNSPTURN5349: process.env.TURNSPTURN5349
+    });
 });
 
 app.get('/viewer', (req, res) => {
-    res.status(200).render('home/viewer.html');
+    res.status(200).render('home/viewer.html', {
+        STUN_SERVER: process.env.STUN_SERVER,
+        TURN_USERNAME: process.env.TURN_USERNAME,
+        TURN_CREDENTIAL: process.env.TURN_CREDENTIAL,
+        TURNSPTURN80: process.env.TURNSPTURN80,
+        TURNSPTURN3478: process.env.TURNSPTURN3478,
+        TURNSPTURN80TCP: process.env.TURNSPTURN80TCP,
+        TURNSPTURN3478TCP: process.env.TURNSPTURN3478TCP,
+        TURNSPTURN443: process.env.TURNSPTURN443,
+        TURNSPTURN5349: process.env.TURNSPTURN5349
+    });
 });
 
 // const viewers = new Set();
