@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.status(200).render('home/index.html', {
+    res.status(200).render('home/index.ejs', {
         STUN_SERVER: process.env.STUN_SERVER,
         TURN_USERNAME: process.env.TURN_USERNAME,
         TURN_CREDENTIAL: process.env.TURN_CREDENTIAL,
@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/viewer', (req, res) => {
-    res.status(200).render('home/viewer.html', {
+    res.status(200).render('home/viewer.ejs', {
         STUN_SERVER: process.env.STUN_SERVER,
         TURN_USERNAME: process.env.TURN_USERNAME,
         TURN_CREDENTIAL: process.env.TURN_CREDENTIAL,
@@ -52,37 +52,37 @@ app.get('/viewer', (req, res) => {
 // const viewers = new Set();
 
 // io.on('connection', (socket) => {
-//     console.log('A user connected:', socket.id);
+// console.log('A user connected:', socket.id);
 
-//     socket.on('ready', () => {
-//         console.log('User is ready:', socket.id);
-//         viewers.add(socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//     });
+// socket.on('ready', () => {
+// console.log('User is ready:', socket.id);
+// viewers.add(socket.id);
+// io.emit('updateViewers', Array.from(viewers));
+// });
 
-//     socket.on('readyToView', () => {
-//         console.log('Viewer connected:', socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//     });
+// socket.on('readyToView', () => {
+// console.log('Viewer connected:', socket.id);
+// io.emit('updateViewers', Array.from(viewers));
+// });
 
-//     socket.on('offer', (offer, id) => {
-//         socket.broadcast.emit('offer', offer, socket.id);
-//     });
+// socket.on('offer', (offer, id) => {
+// socket.broadcast.emit('offer', offer, socket.id);
+// });
 
-//     socket.on('answer', (answer, id) => {
-//         io.to(id).emit('answer', answer, socket.id);
-//     });
+// socket.on('answer', (answer, id) => {
+// io.to(id).emit('answer', answer, socket.id);
+// });
 
-//     socket.on('candidate', (candidate, id) => {
-//         io.to(id).emit('candidate', candidate, socket.id);
-//     });
+// socket.on('candidate', (candidate, id) => {
+// io.to(id).emit('candidate', candidate, socket.id);
+// });
 
-//     socket.on('disconnect', () => {
-//         console.log('User disconnected:', socket.id);
-//         viewers.delete(socket.id);
-//         io.emit('updateViewers', Array.from(viewers));
-//         socket.broadcast.emit('user-disconnected', socket.id);
-//     });
+// socket.on('disconnect', () => {
+// console.log('User disconnected:', socket.id);
+// viewers.delete(socket.id);
+// io.emit('updateViewers', Array.from(viewers));
+// socket.broadcast.emit('user-disconnected', socket.id);
+// });
 // });
 
 io.on('connection', (socket) => {
