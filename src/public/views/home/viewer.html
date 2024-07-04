@@ -53,11 +53,25 @@
             });
 
             peerConnection.onicecandidate = event => {
-                console.log(event.candidate, "event.candidate")
+                console.log(event.candidate, "event.candidate");
                 if (event.candidate) {
                     console.log("Enviando candidato para:", id);
                     socket.emit('candidate', event.candidate, id);
+                } else {
+                    console.log('Todos os candidatos ICE foram descobertos');
                 }
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                console.log('ICE connection state:', peerConnection.iceConnectionState);
+            };
+
+            peerConnection.onconnectionstatechange = () => {
+                console.log('Connection state:', peerConnection.connectionState);
+            };
+
+            peerConnection.onsignalingstatechange = () => {
+                console.log('Signaling state:', peerConnection.signalingState);
             };
 
             peerConnection.ontrack = event => {
@@ -97,7 +111,9 @@
             console.log("Recebido candidato de:", id);
             const peerConnection = peers[id];
             if (peerConnection) {
-                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .then(() => console.log('Adicionado candidato remoto com sucesso'))
+                    .catch(error => console.error('Erro ao adicionar candidato remoto:', error));
             }
         });
 
