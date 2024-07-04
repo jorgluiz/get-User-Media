@@ -47,7 +47,7 @@
         let localStream;
         let peerConnection;
         const configuration = {
-            iceServers: [{ urls: ["%= STUN_SERVER %"] }, { username: "%= TURN_USERNAME %", credential: "%= TURN_CREDENTIAL $", urls: ["%= TURNSPTURN80 %", "%= TURNSPTURN3478 %", "%= TURNSPTURN80TCP %", "%= TURNSPTURN3478TCP %", "%= TURNSPTURN443 %", "%= TURNSPTURN5349 %"] }]
+            iceServers: [{ urls: ["{{STUN_SERVER}}"] }, { username: "{{TURN_USERNAME}}", credential: "{{TURN_CREDENTIAL}}", urls: ["{TURNSPTURN80}", "{{TURNSPTURN3478}}", "{{TURNSPTURN80TCP}}", "{{TURNSPTURN3478TCP}}", "{{TURNSPTURN443}}", "{{TURNSPTURN5349}}"] }]
         };
 
         async function startCamera() {
@@ -69,6 +69,7 @@
                 localVideo.srcObject = localStream;
 
                 peerConnection = new RTCPeerConnection(configuration);
+                console.log(peerConnection)
                 localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
                 peerConnection.onicecandidate = event => {
                     if (event.candidate) {
