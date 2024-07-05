@@ -47,8 +47,37 @@
         let localStream;
         let peerConnection;
         const configuration = {
-            iceServers: [{ urls: "<%= STUN_SERVER %>" }, { username: "<%= TURN_USERNAME %>", credential: "<%= TURN_CREDENTIAL %>", urls: "<%= TURNSPTURN80 %>" }]
-        };
+            accountSid: '<%= ACCOUNTSID %>',
+            dateCreated: '<%= DATECREATED %>',
+            dateUpdated: '<%= DATEUPDATED %>',
+            iceServers: [
+                {
+                    url: '<%= URL %>',
+                    urls: '<%= URLS %>'
+                },
+                {
+                    url: '<%= URL3478 %>',
+                    username: '<%= USERNAME3478 %>',
+                    urls: '<%= URLS3478 %>',
+                    credential: '<%= CREDENTIAL3478 %>'
+                },
+                {
+                    url: '<%= URL3478TCP %>',
+                    username: '<%= USERNAME3478TCP %>',
+                    urls: '<%= URLS3478TCP %>',
+                    credential: '<%= CREDENTIAL3478TCP %>',
+                },
+                {
+                    url: '<%= URL443 %>',
+                    username: '<%= USERNAME443 %>',
+                    urls: '<%= URLS443 %>',
+                    credential: '<%= CREDENTIAL443 %>',
+                },
+            ],
+            password: 'PASSWORD',
+            ttl: 'TTL',
+            username: 'USERNAME'
+        }
 
         async function startCamera() {
             try {

@@ -4,8 +4,26 @@ const http = require('http');
 const path = require('path');
 const open = require('open');
 const socketIo = require('socket.io');
+const twilio = require('twilio');
 
 const app = express();
+
+// Find your Account SID and Auth Token at twilio.com/console
+// and set the environment variables. See http://twil.io/secure
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
+
+const twilioGenerate = async function () {
+    try {
+        const token = await client.tokens.create();
+        console.log(token);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// twilioGenerate()
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -23,22 +41,52 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
     res.status(200).render('home/index.ejs', {
-        STUN_SERVER: process.env.STUN_SERVER,
+        ACCOUNTSID: process.env.ACCOUNTSID,
+        DATECREATED: process.env.DATECREATED,
+        DATEUPDATED: process.env.DATEUPDATED,
+        URL: process.env.URL,
+        URLS: process.env.URLS,
+        URL3478: process.env.URL3478,
+        USERNAME3478: process.env.USERNAME3478,
+        URLS3478: process.env.URLS3478,
+        CREDENTIAL3478: process.env.CREDENTIAL3478,
+        URL3478TCP: process.env.URL3478TCP,
+        USERNAME3478TCP: process.env.USERNAME3478TCP,
+        URLS3478TCP: process.env.URLS3478TCP,
+        CREDENTIAL3478TCP: process.env.CREDENTIAL3478TCP,
+        URL443: process.env.URL443,
+        USERNAME443: process.env.USERNAME443,
+        URLS443: process.env.URLS443,
+        CREDENTIAL443: process.env.CREDENTIAL443,
+        PASSWORD: process.env.PASSWORD,
+        TTL: process.env.TTL,
+        USERNAME: process.env.USERNAME
 
     });
 });
 
 app.get('/viewer', (req, res) => {
     res.status(200).render('home/viewer.ejs', {
-        STUN_SERVER: process.env.STUN_SERVER,
-        TURN_USERNAME: process.env.TURN_USERNAME,
-        TURN_CREDENTIAL: process.env.TURN_CREDENTIAL,
-        TURNSPTURN80: process.env.TURNSPTURN80,
-        TURNSPTURN3478: process.env.TURNSPTURN3478,
-        TURNSPTURN80TCP: process.env.TURNSPTURN80TCP,
-        TURNSPTURN3478TCP: process.env.TURNSPTURN3478TCP,
-        TURNSPTURN443: process.env.TURNSPTURN443,
-        TURNSPTURN5349: process.env.TURNSPTURN5349
+        ACCOUNTSID: process.env.ACCOUNTSID,
+        DATECREATED: process.env.DATECREATED,
+        DATEUPDATED: process.env.DATEUPDATED,
+        URL: process.env.URL,
+        URLS: process.env.URLS,
+        URL3478: process.env.URL3478,
+        USERNAME3478: process.env.USERNAME3478,
+        URLS3478: process.env.URLS3478,
+        CREDENTIAL3478: process.env.CREDENTIAL3478,
+        URL3478TCP: process.env.URL3478TCP,
+        USERNAME3478TCP: process.env.USERNAME3478TCP,
+        URLS3478TCP: process.env.URLS3478TCP,
+        CREDENTIAL3478TCP: process.env.CREDENTIAL3478TCP,
+        URL443: process.env.URL443,
+        USERNAME443: process.env.USERNAME443,
+        URLS443: process.env.URLS443,
+        CREDENTIAL443: process.env.CREDENTIAL443,
+        PASSWORD: process.env.PASSWORD,
+        TTL: process.env.TTL,
+        USERNAME: process.env.USERNAME
     });
 });
 

@@ -44,13 +44,41 @@
 
         socket.on('offer', async (offer, id) => {
             console.log("Recebida oferta de:", id);
-            const peerConnection = new RTCPeerConnection({
-                iceServers: [{ urls: "<%= STUN_SERVER %>" }, { username: "<%= TURN_USERNAME %>", credential: "<%= TURN_CREDENTIAL %>", urls: "<%= TURNSPTURN80 %>" }],
-                iceTransportPolicy: 'all',
-                bundlePolicy: 'balanced',
-                rtcpMuxPolicy: 'require',
-                iceCandidatePoolSize: 0,
-            });
+
+            const configuration = {
+                accountSid: '<%= ACCOUNTSID %>',
+                dateCreated: '<%= DATECREATED %>',
+                dateUpdated: '<%= DATEUPDATED %>',
+                iceServers: [
+                    {
+                        url: '<%= URL %>',
+                        urls: '<%= URLS %>'
+                    },
+                    {
+                        url: '<%= URL3478 %>',
+                        username: '<%= USERNAME3478 %>',
+                        urls: '<%= URLS3478 %>',
+                        credential: '<%= CREDENTIAL3478 %>'
+                    },
+                    {
+                        url: '<%= URL3478TCP %>',
+                        username: '<%= USERNAME3478TCP %>',
+                        urls: '<%= URLS3478TCP %>',
+                        credential: '<%= CREDENTIAL3478TCP %>',
+                    },
+                    {
+                        url: '<%= URL443 %>',
+                        username: '<%= USERNAME443 %>',
+                        urls: '<%= URLS443 %>',
+                        credential: '<%= CREDENTIAL443 %>',
+                    },
+                ],
+                password: 'PASSWORD',
+                ttl: 'TTL',
+                username: 'USERNAME'
+            }
+
+            const peerConnection = new RTCPeerConnection(configuration);
 
             peerConnection.onicecandidate = event => {
                 console.log(event.candidate, "event.candidate");
